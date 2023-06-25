@@ -1,0 +1,9 @@
+input[type="text"]:focus, 
+input[type="password"]:focus { 
+  outline: none;
+  border-color: rgb(213, 0, 36);
+}
+
+[placeholder]:focus::-webkit-input-placeholder {
+  opacity: 0;
+}
