@@ -1,10 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+
+
 import "./App.css"
 
 
+// RANDOM PASSWORD GENERATOR
+import randomExt from 'random-ext'
+
+// MATERIAL UI
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
 // FRAMER-MOTION
 import { motion } from 'framer-motion'
-
 
 // COMPONENTS
 import ProgressDemo from './components/ProgressBar'
@@ -14,6 +22,8 @@ import ProgressDemo from './components/ProgressBar'
 const App = () => {
   const passwordTextRef = useRef();
   const emailTextRef = useRef();
+  const submitBtnRef = useRef();
+  const copyBtn = useRef();
 
   // FOR CHECKING THE CONDITIONS
   const uppercaseCheck = useRef();
@@ -25,8 +35,7 @@ const App = () => {
   const [email, setEmail] = useState('')
   const [progressBarLength, setProgressBarLength] = useState(0)
   const [progressBarBackgroundColor, setProgressBarBackgroundColor] = useState('red')
-  const [submitButtonActive, setSubmitButtonActive] = useState(true)
-
+  const [submitButtonActive, setSubmitButtonActive] = useState(false)
 
 
   // LIST ITEMS FOR CHECKING PASSWORD CONDITIONS 
@@ -93,102 +102,176 @@ const App = () => {
   useEffect(function () {
     // uppercaseCheck
     passwordTextRef.current.value.match(/[A-Z]/)
-      ? uppercaseCheck.current.classList.add('text-teal-400', 'font-bold', 'text-lg')
-      : uppercaseCheck.current.classList.remove('text-teal-400', 'font-bold', 'text-lg')
+      ? uppercaseCheck.current.classList.add('text-emerald-500', 'font-bold', 'text-lg')
+      : uppercaseCheck.current.classList.remove('text-emerald-500', 'font-bold', 'text-lg')
 
     // numericCheck
     passwordTextRef.current.value.match(/[0-9]/)
-      ? numericCheck.current.classList.add('text-teal-400', 'font-bold', 'text-lg')
-      : numericCheck.current.classList.remove('text-teal-400', 'font-bold', 'text-lg')
+      ? numericCheck.current.classList.add('text-emerald-500', 'font-bold', 'text-lg')
+      : numericCheck.current.classList.remove('text-emerald-500', 'font-bold', 'text-lg')
 
     // specialCharCheck
     passwordTextRef.current.value.match(/[!, @, #, $, %, ^, &, *]/)
-      ? specialCharCheck.current.classList.add('text-teal-400', 'font-bold', 'text-lg')
-      : specialCharCheck.current.classList.remove('text-teal-400', 'font-bold', 'text-lg')
+      ? specialCharCheck.current.classList.add('text-emerald-500', 'font-bold', 'text-lg')
+      : specialCharCheck.current.classList.remove('text-emerald-500', 'font-bold', 'text-lg')
 
     // passwordLengthCheck
     passwordTextRef.current.value.length >= 10
-      ? passwordLengthCheck.current.classList.add('text-teal-400', 'font-bold', 'text-lg')
-      : passwordLengthCheck.current.classList.remove('text-teal-400', 'font-bold', 'text-lg')
+      ? passwordLengthCheck.current.classList.add('text-emerald-500', 'font-bold', 'text-lg')
+      : passwordLengthCheck.current.classList.remove('text-emerald-500', 'font-bold', 'text-lg')
   }, [password])
 
 
 
+  useEffect(() => {
+    const passwordLengthInstance = passwordTextRef.current.value.length
+    const passwordSpecialCharChk = passwordTextRef.current.value.match(/[!, @, #, $, %, ^, &, *]/)
+    const passwordNumericChk = passwordTextRef.current.value.match(/[0-9]/)
+    const passwordUpperCaseChk = passwordTextRef.current.value.match(/[A-Z]/)
+
+
+    if (passwordLengthInstance >= 10 && passwordSpecialCharChk && passwordNumericChk && passwordUpperCaseChk) {
+      setSubmitButtonActive(true)
+    } else {
+      setSubmitButtonActive(false);
+    }
+
+    submitButtonActive ? "" : submitBtnRef.current.disabled = true;
+  }, [submitButtonActive, password, email])
+
+
+  function generateRandomPassword() {
+    var randomPass = randomExt.restrictedString(
+      [randomExt.CHAR_TYPE.LOWERCASE, randomExt.CHAR_TYPE.NUMERIC, randomExt.CHAR_TYPE.UPPERCASE, randomExt.CHAR_TYPE.SPECIAL],
+      20,
+      10
+    )
+    setPassword(randomPass);  // having the random in password field.
+
+    copyBtn.current.classList.remove('hidden')
+  }
+
+  function handleClick() {
+    console.log('heheheh');
+  }
+
+
   return (
-    <div className='h-screen w-full relative'>
-      <div className='p-[5rem] rounded-lg bg-pink-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-pink-500'>
+    <>
+      <div className='h-screen w-full relative'>
+        <div className='p-[5rem] rounded-lg bg-pink-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-pink-500'>
 
-        <h1 className='font-bold text-3xl text-center text-zinc-100'>Random password generator</h1>
+          <h1 className='font-bold text-4xl text-center text-cyan-400 underline'>Random password generator</h1>
 
-        <form className='mt-10 flex flex-col'>
+          <form
+            className='mt-10 flex flex-col'
+          >
 
-          {/* --- INPUT FIELDS --- */}
-          <input
-            className='border-2 border-red-400 px-6 py-1 rounded-lg my-2 placeholder:text-black'
-            placeholder="Enter your email"
-            type='text'
-            ref={emailTextRef}
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value)
-            }}
-          />
+            {/* --- INPUT FIELDS --- */}
 
-          <input
-            className='border-2 border-red-400 px-6 py-1 rounded-lg my-2 placeholder:text-black'
-            placeholder="Enter your password"
-            type='password'
-            ref={passwordTextRef}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-            }}
-          />
-
-          {/* --- STRENGTH SECTION --- */}
-          <div className='mb-10 mt-8'>
-            <h1 className='text-2xl font-medium text-white px-2'>Password Strength:</h1>
-            <ul className='my-2 list-decimal'>
-              {listItems.map((item => (
-                <li
-                  key={item.id}
-                  ref={item.ref}
-                  className='duration-500'
-                >
-                  {item.item}
-                </li>
-              )))}
-            </ul>
-
-            <ProgressDemo
-              progressBarLength={progressBarLength}
-              progressBarBackgroundColor={progressBarBackgroundColor}
+            <input
+              className='border-2 border-red-400 px-6 py-1 rounded-lg my-2 placeholder:text-zinc-400'
+              placeholder="e.g. example@gmail.com"
+              type='text'
+              ref={emailTextRef}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+              }}
             />
-          </div>
 
-          {/* --- BUTTONS --- */}
-          <div className='mt-3 mx-auto flex flex-col justify-center items-center'>
-            <motion.button
-              text='Submit'
-              type='submit'
-              className={`px-5 py-2 rounded-lg font-bold text-white my-1 transition duration-500 ease-out ${submitButtonActive? 'bg-blue-600 hover:scale-110 active:scale-95': 'bg-red-700'}`}
-            >
-              Submit
-            </motion.button>
+            <div className='flex flex-row items-center justify-center gap-4'>
+              <input
+                className='border-2 border-red-400 px-6 py-1 rounded-lg my-2 placeholder:text-zinc-400'
+                placeholder='password'
+                type='password'
+                ref={passwordTextRef}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                }}
+              />
 
-            <button
-              text="Generate random password"
-              type='button'
-              className='px-5 py-1 rounded-lg bg-pink-200 font-bold text-black my-1'
-            >
-              Generate random password
-            </button>
-          </div>
+              <div
+                className='hidden cursor-pointer'
+                ref={copyBtn}
+                onClick={() => {
+                  navigator.clipboard.writeText(password)
+                }}
+              >
+                <ContentCopyIcon
+                  fontSize='large'
+                  className='bg-blue-500 p-2 rounded-lg'
+                />
+              </div>
+            </div>
 
-        </form>
+            {submitButtonActive && (
+              <motion.p
+                className='text-center text-xl font-semibold mt-2 text-yellow-400 underline'
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: .5 }}
+              >
+                Now you can submit !!!
+              </motion.p>
+            )}
 
+
+
+            {/* --- STRENGTH SECTION --- */}
+
+            <div className='mb-10 mt-8'>
+              <h1 className='text-2xl font-medium text-white px-2 transition duration-500'>
+                {submitButtonActive ? 'Satisfied...' : 'Password Conditions:'}
+              </h1>
+
+              <ul className='my-2 list-decimal'>
+                {listItems.map((item => (
+                  <li
+                    key={item.id}
+                    ref={item.ref}
+                    className='duration-500 '
+                  >
+                    {item.item}
+                  </li>
+                )))}
+              </ul>
+
+              <ProgressDemo
+                progressBarLength={progressBarLength}
+                progressBarBackgroundColor={progressBarBackgroundColor}
+              />
+            </div>
+
+
+            {/* --- BUTTONS --- */}
+
+            <div className='mx-auto flex flex-col justify-center items-center'>
+              <button
+                text='Submit'
+                type='submit'
+                className={`px-5 py-2 rounded-lg font-bold text-zinc-200 mb-2 transition duration-500 ease-out ${submitButtonActive ? 'bg-blue-700 hover:scale-110 active:scale-95 cursor-pointer' : 'bg-red-700 cursor-not-allowed'}`}
+                ref={submitBtnRef}
+              >
+                Submit
+              </button>
+
+              <button
+                text="Generate random password"
+                type='button'
+                className='px-5 py-1 rounded-lg bg-pink-200 font-bold text-black'
+                onClick={generateRandomPassword}
+              >
+                Generate random password
+              </button>
+            </div>
+
+          </form>
+
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

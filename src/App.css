@@ -1,11 +1,24 @@
 /* ------------ */
+/* IMPORTS */
+/* ------------ */
+
+@import url('https://fonts.googleapis.com/css2?family=Belanosima&display=swap');
+
+
+
+
+
+/* ------------ */
 /* ESSENTIALS */
 /* ------------ */
 
 * {
   margin: 0;
   padding: 0;
+  font-family: 'Belanosima', sans-serif;
 }
+
+
 
 
 
@@ -14,8 +27,8 @@
 /* INPUT */
 /* ------------ */
 
-input[type="text"]:focus, 
-input[type="password"]:focus { 
+input[type="text"]:focus,
+input[type="password"]:focus {
   outline: none;
   border-color: rgb(213, 0, 36);
 }
