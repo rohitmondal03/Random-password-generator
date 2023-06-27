@@ -193,7 +193,7 @@ const App = () => {
               />
 
               <div
-                className='hidden cursor-pointer'
+                className='hidden cursor-pointer transition duration-300 active:scale-95 hover:scale-110'
                 ref={copyBtn}
                 onClick={() => {
                   navigator.clipboard.writeText(password)
